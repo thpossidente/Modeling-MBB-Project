@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 1. inference() - Builds the model as far as is required for running the network
 # forward to make predictions.
 # 2. loss() - Adds to the inference model the layers required to generate loss.
@@ -133,3 +134,6 @@ evaluation <- function(logits, labels) {
   correct <- tf$nn$in_top_k(logits, labels, 1L)
   tf$reduce_sum(tf$cast(correct, tf$int32))
 }
+=======
+
+>>>>>>> origin/master
