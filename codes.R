@@ -4,41 +4,44 @@ n.input2 <- 10
 n.hidden1 <- 25
 n.hidden2 <- 25
 n.output <- 10
+p <-   ##integration
 
-rows1 <- 5
-rows2 <-5
-columns1 <- 6
-columns2 <-6
-s <- matrix(0, nrow = rows1+rows2, ncol = columns1+columns2)
 
-for(i in (columns1+1):(columns1+columns2)){
-  s[,i] <- s[,i] + 1
-}
-
-input1.and.input2.to.hidden.weights <- matrix(0, nrow = (n.input1 + n.input2), ncol = (n.hidden1 + n.hidden2))
-hidden.to.output <- matrix(0, nrow = (n.hidden1 + n.hidden2), ncol = n.output)
+input1.to.hidden1.weights <- matrix(runif((n.input1*n.hidden1), 0, 1), nrow = n.input1, ncol = n.hidden1)
+input2.to.hidden2.weights <- matrix(runif((n.input2*n.hidden12), 0, 1), nrow = n.input2, ncol = n.hidden2)
+hidden1.to.output.weights <- matrix(runif((n.hidden1*n.output), 0, 1), nrow = n.hidden1, ncol = n.output) 
+hidden2.to.output.weights <- matrix(runif((n.hidden2*n.output), 0, 1), nrow = n.hidden2, ncol = n.output)
 
 level.of.integration <- function(p){ #p must be between 0 and 1
+
+  hidden1.to.hidden2.weights <- matrix(0, nrow = n.hidden1, ncol = n.hidden2)
+  hidden2.to.hidden1.weights <- matrix(0, nrow = n.hidden2, ncol = n.hidden2)
   
-  for(i in 1:n.hidden1){
-    input1.and.input2.to.hidden.weights[i,] <- 
-      
+  for(i in 1:length(hidden1.to.hidden2.weights)){
+    hidden1.to.hidden2.weights[i] <<- ##probability of weight being 0 or drawn from a runif(1, 0, 1) based on p
   }
   
-  for(i in (n.hidden1+1):(n.hidden1+n.hidden2)){
-    input1.and.input2.to.hidden.weights[i,] <-
+  for(o in 1:length(hidden2.to.hidden1.weights)){
+    hidden2.to.hidden1.weights[o] <<- ##probability of weight being 0 or drawn from a runif(1, 0, 1) based on p
   }
-  
-  for(i in 1:n.input1){
-    input1.and.input2.to.hidden.weights[,i] <-
-  }
-  
-  for(i in (n.input1+1):(n.input1+n.input2)){
-    input1.and.input2.to.hidden.weights[,i] <-
-  }
+
 }
 
 
 forward.pass <- function(input1, input2){
+
+  
   
 }
+
+
+
+
+
+
+
+
+
+
+
+
