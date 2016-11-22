@@ -82,7 +82,7 @@ batch <- function(num.training){
     for(o in 1:length(g)){
       trace.update(g[[o]])
     }
-    output.matrix[i,] <<- output 
+    output.matrix[i,] <<- output
   }
   return(output.entropy())
 }
@@ -123,7 +123,7 @@ input.correlation <- function(){
                  possible.inputs[91:100,])
   
   if(runif(1) <= correlation.of.inputs){
-    both.inputs.drawn.from <- sample(groups,1,replace=T)
+    both.inputs.drawn.from <- sample(groups,1,replace=T) ## problems
     input1 <- groups[both.inputs.drawn.from[sample(both.inputs.drawn.from,1,replace=T)]]
     input2 <- groups[both.inputs.drawn.from[sample(both.inputs.drawn.from,1,replace=T)]]
     input <- c(input1, input2)
@@ -152,13 +152,20 @@ input.correlation()
 
 
 output.entropy <- function(){
-  mean.1 <- numeric(n.outputs)
-  for(i in 1:n.outputs){
-    mean.1[i] <- mean(weights[1:(n.inputs/4),i])
+  mean.1 <- numeric(n.outputs/2)
+  for(i in 1:n.outputs/2){
+    mean.1[i] <- mean(output.matrix[,i])
   }
   specialization.for.1 <- -sum(mean.1*log2(mean.1))
-  print(paste("Entropy of horizontal is", specialization.for.1))
+  print(paste("Entropy of sensory system 1 is", specialization.for.1))
   
+  
+  mean.2 <- numeric(n.outputs/2)
+  for(i in ((n.outputs/2)+1):n.outputs){
+    mean.2[i] <- mean(output.matrix[,i])
+  }
+  specialization.for.2 <- -sum(mean.2*log2(mean.2))
+  print(paste("Entropy of sensory system 2 is", specialization.for.2))
 }
 
 
