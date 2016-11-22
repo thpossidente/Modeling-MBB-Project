@@ -2,10 +2,11 @@
 
 n.inputs <- 100
 n.outputs <- 10
-correlation.of.inputs <- 0.5 #must be between 0 and 1 
+correlation.of.inputs <- 0 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.parameter <- 0.2
 n.training <- 5000
+n.input.possibilities <- 100
 trace <- rep(0, times = n.outputs) 
 sigmoid.activation <- function(x){
   return(1 / (1+exp(-x)))
@@ -54,7 +55,7 @@ forward.pass <- function(input){
   output[which.max(output[1:5])] <- 1
   output[output[1:5]!=max(output[1:5])] <- 0
   output[which.max(output[6:10])] <- 1
-  output[output[6:10]!=max(output[6:10])] <- 0 ## is this right?
+  output[output[6:10]!=max(output[6:10])] <- 0 
   
   return(output)
 }
@@ -72,12 +73,18 @@ trace.update <- function(input){
 
 
 
-batch <- function(num.training){ 
+
+
+batch <- function(num.training){
+  output.matrix <- matrix(0, nrow=numtraining, ncol=n.outputs)
   for(i in 1:numtraining){
     g <- input.correlation(correlation.of.inputs)
     for(o in 1:length(g)){
       trace.update(g[[o]])
-    }}
+    }
+    output.matrix[i,] <<- output 
+  }
+  return(output.entropy())
 }
 
 batch(n.training)
@@ -91,47 +98,69 @@ batch(n.training)
 
 ### generating inputs ###
 
-inputs <- rep(0, (n.inputs/2))
-possible.inputs <- list()
+possible.inputs <- matrix(0, nrow=n.input.possibilities, ncol=(n.inputs/2))
 
 many.possible.input.vectors <- function(){
-  for(i in  1:10000){
-      sample(inputs, ((n.inputs/2)*0.1), replace=F) <<- 1
-      
+  for(i in  1:n.input.possibilities){
+      possible.inputs[i,sample((n.inputs/2), ((n.inputs/2)*0.1), replace=F)] <<- 1
   }
      
 }
+many.possible.input.vectors()
 
 
+
+input.correlation <- function(){
+  groups <- list(possible.inputs[1:10,],
+                 possible.inputs[11:20,],
+                 possible.inputs[21:30,],
+                 possible.inputs[31:40,],
+                 possible.inputs[41:50,],
+                 possible.inputs[51:60,],
+                 possible.inputs[61:70,],
+                 possible.inputs[71:80,],
+                 possible.inputs[81:90,],
+                 possible.inputs[91:100,])
+  
+  if(runif(1) <= correlation.of.inputs){
+    both.inputs.drawn.from <- sample(groups,1,replace=T)
+    input1 <- groups[both.inputs.drawn.from[sample(both.inputs.drawn.from,1,replace=T)]]
+    input2 <- groups[both.inputs.drawn.from[sample(both.inputs.drawn.from,1,replace=T)]]
+    input <- c(input1, input2)
+  } else{
+        the.else.function()
+        while(input1.drawn.from == input2.drawn.from){
+          the.else.function()}
+        input1 <- groups[input1.drawn.from[sample(input1.drawn.from,1,replace=T)]]
+        input2 <- groups[input2.drawn.from[sample(input2.drawn.from,1,replace=T)]]
+        input <- c(input1, input2)
+  }
+  return(input)
+}
+
+
+the.else.function <- function(){
+  input1.drawn.from <- sample(groups,1,replace=T)
+  input2.drawn.from <- sample(groups,1,replace=T)
+}
+
+
+input.correlation()
 
 
 ### Measuring Entropy ###
 
 
-node.specialization <- function(){
-  
-  
-  mean.1 <- numeric(n.outputs/2)
-  for(i in 1:(n.outputs/2)){
-    mean.1[i] <- mean(weights[1:n.inputs,i])  #does mean need to be indexed by i?
+output.entropy <- function(){
+  mean.1 <- numeric(n.outputs)
+  for(i in 1:n.outputs){
+    mean.1[i] <- mean(weights[1:(n.inputs/4),i])
   }
   specialization.for.1 <- -sum(mean.1*log2(mean.1))
-  print(paste("Entropy of first modality is", specialization.for.1))
+  print(paste("Entropy of horizontal is", specialization.for.1))
   
-  
-  
-  mean.2 <- numeric(n.outputs/2)
-  for(i in ((n.outputs/2)+1):n.outputs){
-    mean.2[i] <- mean(weights[1:n.inputs,i])
-  }
-  specialization.for.2 <- -sum(mean.2*log2(mean.2))
-  print(paste("Entropy of first modality is", specialization.for.2))
-  
-  
-  return(data.frame(Entropy.First.Modality=specialization.for.1, Entroppy.Second.Modality=specialization.for.2))
 }
 
-node.specialization()
 
 
 
