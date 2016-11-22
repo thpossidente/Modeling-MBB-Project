@@ -2,11 +2,11 @@
 
 n.inputs <- 100
 n.outputs <- 10
-correlation.of.inputs <- 0 #must be between 0 and 1 
+correlation.of.inputs <- 0.5 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.parameter <- 0.2
 n.training <- 5000
-trace <- rep(0, times = n.outputs)
+trace <- rep(0, times = n.outputs) 
 sigmoid.activation <- function(x){
   return(1 / (1+exp(-x)))
 }
@@ -54,7 +54,7 @@ forward.pass <- function(input){
   output[which.max(output[1:5])] <- 1
   output[output[1:5]!=max(output[1:5])] <- 0
   output[which.max(output[6:10])] <- 1
-  output[output[6:10]!=max(output[6:10])] <- 0
+  output[output[6:10]!=max(output[6:10])] <- 0 ## is this right?
   
   return(output)
 }
@@ -91,22 +91,18 @@ batch(n.training)
 
 ### generating inputs ###
 
-inputs <- rep(0, 100)
-input.map.1 <- inputs[1:(n.inputs/2)]
-input.map.2 <- inputs[(n.inputs/2 + 1):n.inputs]
+inputs <- rep(0, (n.inputs/2))
+possible.inputs <- list()
 
-
-input.correlation <- function(correlation.of.inputs){
-  counter <- 0
-  while(counter < (0.1*(n.inputs/2))){
-    sample(input.map.1, 1, replace = F) <<- 1
-    if(runif<=correlation.of.inputs){
-      #how to make input.map.2 value 1 in the same value that input.map.1 is?
-    }
-    counter <- counter + 1
+many.possible.input.vectors <- function(){
+  for(i in  1:10000){
+      sample(inputs, ((n.inputs/2)*0.1), replace=F) <<- 1
+      
   }
-  inputs <- rbind(input.map.1, input.map.2)
+     
 }
+
+
 
 
 ### Measuring Entropy ###
@@ -115,42 +111,24 @@ input.correlation <- function(correlation.of.inputs){
 node.specialization <- function(){
   
   
-  mean.1 <- numeric(n.outputs)
-  for(i in 1:n.outputs){
-    mean.1[i] <- mean(weights[1:(n.inputs/4),i])
+  mean.1 <- numeric(n.outputs/2)
+  for(i in 1:(n.outputs/2)){
+    mean.1[i] <- mean(weights[1:n.inputs,i])  #does mean need to be indexed by i?
   }
   specialization.for.1 <- -sum(mean.1*log2(mean.1))
-  print(paste("Entropy of horizontal is", specialization.for.1))
+  print(paste("Entropy of first modality is", specialization.for.1))
   
   
   
-  mean.2 <- numeric(n.outputs)
-  for(i in 1:n.outputs){
-    mean.2[i] <- mean(weights[(n.inputs/4):((n.inputs/4)*2),i])
+  mean.2 <- numeric(n.outputs/2)
+  for(i in ((n.outputs/2)+1):n.outputs){
+    mean.2[i] <- mean(weights[1:n.inputs,i])
   }
   specialization.for.2 <- -sum(mean.2*log2(mean.2))
-  print(paste("Entropy of vertical is", specialization.for.2))
+  print(paste("Entropy of first modality is", specialization.for.2))
   
   
-  
-  mean.3 <- numeric(n.outputs)
-  for(i in 1:n.outputs){
-    mean.3[i] <- mean(weights[((n.inputs/4)*2):((n.inputs/4)*3),i])
-  }
-  specialization.for.3 <- -sum(mean.3*log2(mean.3))
-  print(paste("Entropy of left diagonal is", specialization.for.3))
-  
-  
-  
-  mean.4 <- numeric(n.outputs)
-  for(i in 1:n.outputs){
-    mean.4[i] <- mean(weights[((n.inputs/4)*3):((n.inputs/4)*4),i])
-  }
-  specialization.for.4 <- -sum(mean.4*log2(mean.4))
-  print(paste("Entropy of right diagonal is", specialization.for.4))
-  
-  
-  return(data.frame(horizontal=specialization.for.1, vertical=specialization.for.2, left.diagonal=specialization.for.3, right.diagonal=specialization.for.4))
+  return(data.frame(Entropy.First.Modality=specialization.for.1, Entroppy.Second.Modality=specialization.for.2))
 }
 
 node.specialization()
