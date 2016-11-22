@@ -10,16 +10,15 @@ trace <- rep(0, times = n.outputs)
 sigmoid.activation <- function(x){
   return(1 / (1+exp(-x)))
 }
-p <- 0  # p must be between 0 and 1
+p <- 0.5  # p must be between 0 and 1
 # A value of 0 represents a totally segregated model (visual inputs processed totally separately from auditory inptus) 
 # A value of 1 represents a totally integrated model (visual inputs and auditory inputs are integrated and processed together)
 
-
+weights <- matrix(runif(n.inputs*n.outputs, min=0, max=1), nrow=n.inputs, ncol=n.outputs)
 weight.map.input1.output1 <- weights[1:(n.inputs/2), 1:(n.outputs/2)]# 1:50, 1:5  #input 1 to output 1
 weight.map.input2.output2 <- weights[((n.inputs/2) + 1):n.inputs, ((n.outputs/2) + 1):n.outputs] # 51:100, 6:10 #input 2 to output 2
 weight.map.input1.output2 <- weights[1:(n.inputs/2), ((n.outputs/2) + 1):n.outputs]    # 1:50, 6:10  # input 1 to output 2
 weight.map.input2.output1 <- weights[((n.inputs/2) + 1):n.inputs, 1:(n.outputs/2)]   # 51:100, 1:5  #input 2 to output 1
-weights <- cbind((rbind(weight.map.input1.output1, weight.map.input2.output1)), (rbind(weight.map.input1.output2, weight.map.input2.output2)))
 
 
 integration <- function(p){ 
@@ -38,7 +37,7 @@ integration <- function(p){
     } else{
       weight.map.input2.output1[i] <<- 0
     }}
-  
+  weights <<- cbind((rbind(weight.map.input1.output1, weight.map.input2.output1)), (rbind(weight.map.input1.output2, weight.map.input2.output2)))
 }
 
 integration(p)
@@ -86,31 +85,78 @@ batch(n.training)
 
 
 
-# measure success of network using entropy function
-# generate input sequences to input during batch function
 
 
 
 
+### generating inputs ###
 
-
-
-
-## helper functions:
-
-
+inputs <- rep(0, 100)
 input.map.1 <- inputs[1:(n.inputs/2)]
 input.map.2 <- inputs[(n.inputs/2 + 1):n.inputs]
-inputs <- rbind(input.map.1, input.map.2)
+
 
 input.correlation <- function(correlation.of.inputs){
   counter <- 0
-  while(counter < (0.05*n.inputs)){
+  while(counter < (0.1*(n.inputs/2))){
     sample(input.map.1, 1, replace = F) <<- 1
     if(runif<=correlation.of.inputs){
       #how to make input.map.2 value 1 in the same value that input.map.1 is?
     }
     counter <- counter + 1
   }
-  
+  inputs <- rbind(input.map.1, input.map.2)
 }
+
+
+### Measuring Entropy ###
+
+
+node.specialization <- function(){
+  
+  
+  mean.1 <- numeric(n.outputs)
+  for(i in 1:n.outputs){
+    mean.1[i] <- mean(weights[1:(n.inputs/4),i])
+  }
+  specialization.for.1 <- -sum(mean.1*log2(mean.1))
+  print(paste("Entropy of horizontal is", specialization.for.1))
+  
+  
+  
+  mean.2 <- numeric(n.outputs)
+  for(i in 1:n.outputs){
+    mean.2[i] <- mean(weights[(n.inputs/4):((n.inputs/4)*2),i])
+  }
+  specialization.for.2 <- -sum(mean.2*log2(mean.2))
+  print(paste("Entropy of vertical is", specialization.for.2))
+  
+  
+  
+  mean.3 <- numeric(n.outputs)
+  for(i in 1:n.outputs){
+    mean.3[i] <- mean(weights[((n.inputs/4)*2):((n.inputs/4)*3),i])
+  }
+  specialization.for.3 <- -sum(mean.3*log2(mean.3))
+  print(paste("Entropy of left diagonal is", specialization.for.3))
+  
+  
+  
+  mean.4 <- numeric(n.outputs)
+  for(i in 1:n.outputs){
+    mean.4[i] <- mean(weights[((n.inputs/4)*3):((n.inputs/4)*4),i])
+  }
+  specialization.for.4 <- -sum(mean.4*log2(mean.4))
+  print(paste("Entropy of right diagonal is", specialization.for.4))
+  
+  
+  return(data.frame(horizontal=specialization.for.1, vertical=specialization.for.2, left.diagonal=specialization.for.3, right.diagonal=specialization.for.4))
+}
+
+node.specialization()
+
+
+
+
+
+
