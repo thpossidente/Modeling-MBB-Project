@@ -2,7 +2,7 @@
 
 n.inputs <- 100
 n.outputs <- 10
-correlation.of.inputs <- 1 #must be between 0 and 1 
+correlation.of.inputs <- 0 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.parameter <- 0.2
 n.training <- 5000
@@ -129,7 +129,7 @@ input.correlation <- function(){
     input <<- c(input1, input2)
   } else{
         else.function()
-        while(input1.drawn.from == input2.drawn.from){ ##problem
+        while(all(input1.drawn.from == input2.drawn.from)){
           else.function()}
         input1 <- input1.drawn.from[sample(nrow(input1.drawn.from),1, replace=T),]
         input2 <- input2.drawn.from[sample(nrow(input2.drawn.from),1, replace=T),]
