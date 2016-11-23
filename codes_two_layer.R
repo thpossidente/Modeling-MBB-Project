@@ -2,7 +2,7 @@
 
 n.inputs <- 100
 n.outputs <- 10
-correlation.of.inputs <- 0 #must be between 0 and 1 
+correlation.of.inputs <- 1 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.parameter <- 0.2
 n.training <- 5000
@@ -109,9 +109,8 @@ many.possible.input.vectors <- function(){
 many.possible.input.vectors()
 
 
-
 input.correlation <- function(){
-  groups <- list(possible.inputs[1:10,],
+  groups <<- list(possible.inputs[1:10,],
                  possible.inputs[11:20,],
                  possible.inputs[21:30,],
                  possible.inputs[31:40,],
@@ -123,29 +122,32 @@ input.correlation <- function(){
                  possible.inputs[91:100,])
   
   if(runif(1) <= correlation.of.inputs){
-    both.inputs.drawn.from <- sample(groups,1,replace=T) ## problems
-    input1 <- groups[both.inputs.drawn.from[sample(both.inputs.drawn.from,1,replace=T)]]
-    input2 <- groups[both.inputs.drawn.from[sample(both.inputs.drawn.from,1,replace=T)]]
-    input <- c(input1, input2)
+    both.inputs.drawn.from <- sample(groups,1,replace=T)
+    both.inputs.drawn.from <- do.call(rbind, both.inputs.drawn.from)
+    input1 <- both.inputs.drawn.from[sample(nrow(both.inputs.drawn.from), 1, replace=T),]
+    input2 <- both.inputs.drawn.from[sample(nrow(both.inputs.drawn.from), 1, replace=T),]
+    input <<- c(input1, input2)
   } else{
-        the.else.function()
-        while(input1.drawn.from == input2.drawn.from){
-          the.else.function()}
-        input1 <- groups[input1.drawn.from[sample(input1.drawn.from,1,replace=T)]]
-        input2 <- groups[input2.drawn.from[sample(input2.drawn.from,1,replace=T)]]
-        input <- c(input1, input2)
+        else.function()
+        while(input1.drawn.from == input2.drawn.from){ ##problem
+          else.function()}
+        input1 <- input1.drawn.from[sample(nrow(input1.drawn.from),1, replace=T),]
+        input2 <- input2.drawn.from[sample(nrow(input2.drawn.from),1, replace=T),]
+        input <<- c(input1, input2)
   }
   return(input)
 }
 
-
-the.else.function <- function(){
-  input1.drawn.from <- sample(groups,1,replace=T)
-  input2.drawn.from <- sample(groups,1,replace=T)
+else.function <- function(){
+  input1.drawn.from <<- sample(groups,1,replace=T)
+  input1.drawn.from <<- do.call(rbind, input1.drawn.from)
+  input2.drawn.from <<- sample(groups,1,replace=T)
+  input2.drawn.from <<- do.call(rbind, input2.drawn.from)
 }
 
 
 input.correlation()
+
 
 
 ### Measuring Entropy ###
