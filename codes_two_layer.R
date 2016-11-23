@@ -62,7 +62,7 @@ forward.pass <- function(input){
 
 
 trace.update <- function(input){
-  output <- forward.pass(input)
+  output <<- forward.pass(input)
   
   for(i in 1:n.outputs){
     trace[i] <<- (1 - trace.param) * trace[i] + trace.param * output[i]
@@ -75,10 +75,10 @@ trace.update <- function(input){
 
 
 
-batch <- function(num.training){
+batch <- function(num.training){ ##problems
   output.matrix <- matrix(0, nrow=numtraining, ncol=n.outputs)
   for(i in 1:numtraining){
-    g <- input.correlation(correlation.of.inputs)
+    g <- input.correlation()
     for(o in 1:length(g)){
       trace.update(g[[o]])
     }
@@ -146,14 +146,12 @@ else.function <- function(){
 }
 
 
-input.correlation()
-
 
 
 ### Measuring Entropy ###
 
 
-output.entropy <- function(){
+output.entropy <- function(){  ## problems
   mean.1 <- numeric(n.outputs/2)
   for(i in 1:n.outputs/2){
     mean.1[i] <- mean(output.matrix[,i])
