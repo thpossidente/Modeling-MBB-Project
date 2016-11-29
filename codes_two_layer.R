@@ -1,8 +1,8 @@
 ## 2 layer implementation ##
 
 n.inputs <- 100
-n.outputs <- 10
-correlation.of.inputs <- 0 #must be between 0 and 1 
+n.outputs <- 20
+correlation.of.inputs <- 1 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.parameter <- 0.2
 n.training <- 5000
@@ -49,7 +49,7 @@ forward.pass <- function(input){
   
   output <- numeric(n.outputs)
   for(j in 1:output){
-    output[j] <<- sigmoid.activation(sum(input*weights)) 
+    output[j] <- sigmoid.activation(sum(input*weights)) 
   }
   
   output[which.max(output[1:5])] <- 1
@@ -75,20 +75,27 @@ trace.update <- function(input){
 
 
 
-batch <- function(num.training){ ##problems
-  output.matrix <- matrix(0, nrow=numtraining, ncol=n.outputs)
-  for(i in 1:numtraining){
-    g <- input.correlation()
-    for(o in 1:length(g)){
-      trace.update(g[[o]])
+batch <- function(n.training){ ## every x number of trials, run stability functions
+  counter <- 0
+  while(counter <= n.training){ 
+    if(counter %% 100 == 0){
+      stability.across.groups()
+      stability.within.groups()
     }
-    output.matrix[i,] <<- output
+    counter <- counter + 1
+    
+    for(i in 1:n.training){
+      g <- input.correlation() 
+      for(o in 1:nrow(g)){   ## how to run trace on every row in g? (g is 10 inputs long)
+        for(h in 1:ncol(g)){
+        trace.update(g[[o,h]])
+        }
+      }
+    }
   }
-  return(output.entropy())
 }
 
 batch(n.training)
-
 
 
 
@@ -102,38 +109,34 @@ possible.inputs <- matrix(0, nrow=n.input.possibilities, ncol=(n.inputs/2))
 
 many.possible.input.vectors <- function(){
   for(i in  1:n.input.possibilities){
-      possible.inputs[i,sample((n.inputs/2), ((n.inputs/2)*0.1), replace=F)] <<- 1
+    possible.inputs[i,sample((n.inputs/2), ((n.inputs/2)*0.1), replace=F)] <<- 1
   }
-     
+  
 }
 many.possible.input.vectors()
 
 
 input.correlation <- function(){
   groups <<- list(possible.inputs[1:10,],
-                 possible.inputs[11:20,],
-                 possible.inputs[21:30,],
-                 possible.inputs[31:40,],
-                 possible.inputs[41:50,],
-                 possible.inputs[51:60,],
-                 possible.inputs[61:70,],
-                 possible.inputs[71:80,],
-                 possible.inputs[81:90,],
-                 possible.inputs[91:100,])
+                  possible.inputs[11:20,],  
+                  possible.inputs[21:30,],
+                  possible.inputs[31:40,],
+                  possible.inputs[41:50,],
+                  possible.inputs[51:60,],
+                  possible.inputs[61:70,],
+                  possible.inputs[71:80,],
+                  possible.inputs[81:90,],
+                  possible.inputs[91:100,])
   
   if(runif(1) <= correlation.of.inputs){
     both.inputs.drawn.from <- sample(groups,1,replace=T)
     both.inputs.drawn.from <- do.call(rbind, both.inputs.drawn.from)
-    input1 <- both.inputs.drawn.from[sample(nrow(both.inputs.drawn.from), 1, replace=T),]
-    input2 <- both.inputs.drawn.from[sample(nrow(both.inputs.drawn.from), 1, replace=T),]
-    input <<- c(input1, input2)
+    input <<- cbind(both.inputs.drawn.from, both.inputs.drawn.from)
   } else{
-        else.function()
-        while(all(input1.drawn.from == input2.drawn.from)){
-          else.function()}
-        input1 <- input1.drawn.from[sample(nrow(input1.drawn.from),1, replace=T),]
-        input2 <- input2.drawn.from[sample(nrow(input2.drawn.from),1, replace=T),]
-        input <<- c(input1, input2)
+    else.function()
+    while(all(input1.drawn.from == input2.drawn.from)){
+      else.function()}
+    input <<- cbind(input1.drawn.from, input2.drawn.from)
   }
   return(input)
 }
@@ -148,29 +151,28 @@ else.function <- function(){
 
 
 
-### Measuring Entropy ###
+### Measuring Stability ###
 
-
-output.entropy <- function(){  ## problems
-  mean.1 <- numeric(n.outputs/2)
-  for(i in 1:n.outputs/2){
-    mean.1[i] <- mean(output.matrix[,i])
-  }
-  specialization.for.1 <- -sum(mean.1*log2(mean.1))
-  print(paste("Entropy of sensory system 1 is", specialization.for.1))
+stability.accross.inputs <- 
+stability.within.inputs <- 
   
   
-  mean.2 <- numeric(n.outputs/2)
-  for(i in ((n.outputs/2)+1):n.outputs){
-    mean.2[i] <- mean(output.matrix[,i])
-  }
-  specialization.for.2 <- -sum(mean.2*log2(mean.2))
-  print(paste("Entropy of sensory system 2 is", specialization.for.2))
+  
+stability.accross.groups <- function(){
+    for(i in 1:??){
+      forward.pass(stability.accross.inputs)
+    }
 }
 
 
 
+stability.within.groups <- function(){
+  for(i in 1:??){
+    forward.pass(stability.within.inputs)
+  }
+}
 
 
-
-
+#two kinds of stability. Both measure # of times each node is active in output
+# run stability functions after x number of training trials
+# for stability function run batch of inputs through forward pass and look at activation nodes of outputs
