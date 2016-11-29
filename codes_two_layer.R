@@ -75,25 +75,26 @@ trace.update <- function(input){
 
 
 
-batch <- function(n.training){ ## every x number of trials, run stability functions
+batch <- function(n.training){ 
   counter <- 0
+  stability.accross.vector <- numeric(0)
+  st
   while(counter <= n.training){ 
     if(counter %% 100 == 0){
-      stability.across.groups()
-      stability.within.groups()
+      stability.across.vector <- c(stability.across.vector, stability.across.groups()) 
+      stability.within.vector <- c(stability.within.vector, stability.within.groups())
     }
     counter <- counter + 1
     
     for(i in 1:n.training){
       g <- input.correlation() 
-      for(o in 1:nrow(g)){   ## how to run trace on every row in g? (g is 10 inputs long)
-        for(h in 1:ncol(g)){
-        trace.update(g[[o,h]])
+      for(o in 1:nrow(g)){   
+        trace.update(g[[o,]])
         }
       }
     }
-  }
 }
+
 
 batch(n.training)
 
@@ -153,13 +154,28 @@ else.function <- function(){
 
 ### Measuring Stability ###
 
-stability.accross.inputs <- 
-stability.within.inputs <- 
+stability.accross.inputs <- funtion(){
+  for(i in 1:10){
+    for(h in 1:10)
+      do.call(rbind, groups[i]) 
+      do.call(rbind, groups[h]) ## how to combine in all ways?
+  }
+}
+
+
+
+
+stability.within.inputs <- function(){
+  for(i in 10){
+  }
+}
   
   
-  
+
+
+
 stability.accross.groups <- function(){
-    for(i in 1:??){
+    for(i in 1:10){
       forward.pass(stability.accross.inputs)
     }
 }
@@ -167,7 +183,7 @@ stability.accross.groups <- function(){
 
 
 stability.within.groups <- function(){
-  for(i in 1:??){
+  for(i in 1:100){
     forward.pass(stability.within.inputs)
   }
 }
