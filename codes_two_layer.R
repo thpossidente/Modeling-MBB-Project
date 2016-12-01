@@ -4,14 +4,14 @@ n.inputs <- 100
 n.outputs <- 20
 correlation.of.inputs <- 1 #must be between 0 and 1 
 learning.rate <- 0.02
-trace.parameter <- 0.2
-n.training <- 5000
+trace.param <- 0.2
+n.training <- 500
 n.input.possibilities <- 100
 trace <- rep(0, times = n.outputs) 
 sigmoid.activation <- function(x){
   return(1 / (1+exp(-x)))
 }
-p <- 0.5  # p must be between 0 and 1
+p <- 0  # p must be between 0 and 1
 # A value of 0 represents a totally segregated model (visual inputs processed totally separately from auditory inptus) 
 # A value of 1 represents a totally integrated model (visual inputs and auditory inputs are integrated and processed together)
 
@@ -26,19 +26,19 @@ integration <- function(p){
   
   for(i in 1:length(weight.map.input1.output2)){
     if(runif(1) <= p){
-      weight.map.input1.output2[i] <<- runif(1)
+      weight.map.input1.output2[i] <- runif(1)
     } else{
-      weight.map.input1.output2[i] <<- 0
+      weight.map.input1.output2[i] <- 0
     }}
   
   
   for(i in 1:length(weight.map.input2.output1)){
     if(runif(1) <= p){
-      weight.map.input2.output1[i] <<- runif(1)
+      weight.map.input2.output1[i] <- runif(1)
     } else{
-      weight.map.input2.output1[i] <<- 0
+      weight.map.input2.output1[i] <- 0
     }}
-  weights <<- cbind((rbind(weight.map.input1.output1, weight.map.input2.output1)), (rbind(weight.map.input1.output2, weight.map.input2.output2)))
+  weights <- cbind((rbind(weight.map.input1.output1, weight.map.input2.output1)), (rbind(weight.map.input1.output2, weight.map.input2.output2)))
 }
 
 integration(p)
@@ -48,7 +48,7 @@ integration(p)
 forward.pass <- function(input){
   
   output <- numeric(n.outputs)
-  for(j in 1:output){
+  for(j in 1:n.outputs){
     output[j] <- sigmoid.activation(sum(input*weights)) 
   }
   
@@ -62,11 +62,11 @@ forward.pass <- function(input){
 
 
 trace.update <- function(input){
-  output <<- forward.pass(input)
+  output <- forward.pass(input)
   
   for(i in 1:n.outputs){
     trace[i] <<- (1 - trace.param) * trace[i] + trace.param * output[i]
-    weights[,i] <<- learning.rate * trace[i] * input - learning.rate * trace[i] * weights[,i]
+    weights[,i] <<- learning.rate * trace[i] * input - learning.rate * trace[i] * weights[,i] #weights at zero should not change
   }
   
 }
@@ -76,24 +76,24 @@ trace.update <- function(input){
 
 
 batch <- function(n.training){ 
-  counter <- 0
-  stability.accross.vector <- numeric(0)
-  st
-  while(counter <= n.training){ 
-    if(counter %% 100 == 0){
-      stability.across.vector <- c(stability.across.vector, stability.across.groups()) 
-      stability.within.vector <- c(stability.within.vector, stability.within.groups())
-    }
-    counter <- counter + 1
+  #counter <- 0
+  #stability.accross.vector <- numeric(0)
+  #stability.within.vector <- numeric(0)
+  #while(counter <= n.training){ 
+  #  if(counter %% 100 == 0){
+  #    stability.across.vector <- c(stability.across.vector, stability.across.groups()) 
+  #    stability.within.vector <- c(stability.within.vector, stability.within.groups())
+  #  }
+  #  counter <- counter + 1
     
     for(i in 1:n.training){
       g <- input.correlation() 
       for(o in 1:nrow(g)){   
-        trace.update(g[[o,]])
+        trace.update(g[o,])
         }
       }
     }
-}
+#}
 
 
 batch(n.training)
@@ -118,7 +118,7 @@ many.possible.input.vectors()
 
 
 input.correlation <- function(){
-  groups <<- list(possible.inputs[1:10,],
+  groups <- list(possible.inputs[1:10,],
                   possible.inputs[11:20,],  
                   possible.inputs[21:30,],
                   possible.inputs[31:40,],
@@ -132,21 +132,21 @@ input.correlation <- function(){
   if(runif(1) <= correlation.of.inputs){
     both.inputs.drawn.from <- sample(groups,1,replace=T)
     both.inputs.drawn.from <- do.call(rbind, both.inputs.drawn.from)
-    input <<- cbind(both.inputs.drawn.from, both.inputs.drawn.from)
+    input <- cbind(both.inputs.drawn.from, both.inputs.drawn.from)
   } else{
     else.function()
     while(all(input1.drawn.from == input2.drawn.from)){
       else.function()}
-    input <<- cbind(input1.drawn.from, input2.drawn.from)
+    input <- cbind(input1.drawn.from, input2.drawn.from)
   }
   return(input)
 }
 
 else.function <- function(){
-  input1.drawn.from <<- sample(groups,1,replace=T)
-  input1.drawn.from <<- do.call(rbind, input1.drawn.from)
-  input2.drawn.from <<- sample(groups,1,replace=T)
-  input2.drawn.from <<- do.call(rbind, input2.drawn.from)
+  input1.drawn.from <- sample(groups,1,replace=T)
+  input1.drawn.from <- do.call(rbind, input1.drawn.from)
+  input2.drawn.from <- sample(groups,1,replace=T)
+  input2.drawn.from <- do.call(rbind, input2.drawn.from)
 }
 
 
@@ -154,39 +154,29 @@ else.function <- function(){
 
 ### Measuring Stability ###
 
-stability.accross.inputs <- funtion(){
+  
+stability.accross.groups <- funtion(){
   for(i in 1:10){
-    for(h in 1:10)
-      do.call(rbind, groups[i]) 
-      do.call(rbind, groups[h]) ## how to combine in all ways?
+    system1[i] <- do.call(rbind, groups[i]) 
+    system2[i] <- do.call(rbind, groups[i]) 
   }
-}
-
-
-
-
-stability.within.inputs <- function(){
-  for(i in 10){
-  }
-}
   
-  
-
-
-
-stability.accross.groups <- function(){
-    for(i in 1:10){
-      forward.pass(stability.accross.inputs)
-    }
 }
 
 
 
 stability.within.groups <- function(){
-  for(i in 1:100){
-    forward.pass(stability.within.inputs)
+  for(a in 1:10){
+    inputA <- groups[[a]]  ## must measure stability after each group of inputA completes.
+    for(b in 1:10){
+      inputB <- groups[[b]]
+      for(i in 1:10){
+        forward.pass(c(inputA[i,], inputB[i,]))
+      }
+    }
   }
 }
+
 
 
 #two kinds of stability. Both measure # of times each node is active in output
