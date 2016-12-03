@@ -156,37 +156,37 @@ else.function <- function(){
 
 
 stability.accross.groups <- funtion(){
-  for(i in 1:10){
-    system1[i] <- do.call(rbind, groups[i]) 
-    system2[i] <- do.call(rbind, groups[i]) 
-  }
   
 }
 
 
 
 stability.within.groups <- function(){
-  storing.outputs <- matrix(0, nrow = 1000, ncol = 20)
-  stability <- matrix(0, nrow = 10, ncol = 20)
+  stability <- matrix(NA, nrow = 10, ncol = 20)
+  storing.outputs <- matrix(NA, nrow = 1000, ncol= 20)
   for(a in 1:10){
     inputA <- groups[[a]]  
     for(b in 1:10){
       inputB <- groups[[b]]
       for(i in 1:10){
-        storing.outputs[a,] <- forward.pass(c(inputA[i,], inputB[i,])) #not working
+        one.output <- forward.pass(c(inputA[i,], inputB[i,])) 
+        storing.outputs <- rbind(storing.outputs, one.output)
       }
     }
   }
-  for(h in 10){
-    stability[h,] <- colSums(storing.outputs[((i-1)*100)+1 : i*10,])
+  storing.outputs <- storing.outputs[-(1:1000),]
+  
+  for(h in 1:10){
+    one.stability <- colSums(storing.outputs[((i-1)*100)+1 : i*10,] == 1)
+    stability <- rbind(stability, one.stability)
   }
+  stability <- stability[-(1:10),]
+  
 }
 
-stability.within.groups()
+stability.within.groups() #not quite working
 
-
-
-
+#The formula for entropy is -sum(v*log2(v)), where v is the vector
 
 
 
