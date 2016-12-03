@@ -5,7 +5,7 @@ n.outputs <- 20
 correlation.of.inputs <- 1 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.param <- 0.2
-n.training <- 500
+n.training <- 5000
 n.input.possibilities <- 100
 trace <- rep(0, times = n.outputs) 
 sigmoid.activation <- function(x){
@@ -118,7 +118,7 @@ many.possible.input.vectors()
 
 
 input.correlation <- function(){
-  groups <- list(possible.inputs[1:10,],
+  groups <<- list(possible.inputs[1:10,],
                  possible.inputs[11:20,],  
                  possible.inputs[21:30,],
                  possible.inputs[31:40,],
@@ -166,19 +166,29 @@ stability.accross.groups <- funtion(){
 
 
 stability.within.groups <- function(){
+  storing.outputs <- matrix(0, nrow = 1000, ncol = 20)
+  stability <- matrix(0, nrow = 10, ncol = 20)
   for(a in 1:10){
-    inputA <- groups[[a]]  ## must measure stability after each group of inputA completes.
+    inputA <- groups[[a]]  
     for(b in 1:10){
       inputB <- groups[[b]]
       for(i in 1:10){
-        forward.pass(c(inputA[i,], inputB[i,]))
+        storing.outputs[a,] <- forward.pass(c(inputA[i,], inputB[i,])) #not working
       }
     }
   }
+  for(h in 10){
+    stability[h,] <- colSums(storing.outputs[((i-1)*100)+1 : i*10,])
+  }
 }
 
+stability.within.groups()
 
 
-#two kinds of stability. Both measure # of times each node is active in output
-# run stability functions after x number of training trials
-# for stability function run batch of inputs through forward pass and look at activation nodes of outputs
+
+
+
+
+
+
+
