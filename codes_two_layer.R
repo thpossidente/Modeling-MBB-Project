@@ -2,7 +2,7 @@
 
 n.inputs <- 100
 n.outputs <- 20
-correlation.of.inputs <- 0 #must be between 0 and 1 
+correlation.of.inputs <- 1 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.param <- 0.2
 n.training <- 2000
@@ -11,7 +11,7 @@ trace <- rep(0, times = n.outputs)
 sigmoid.activation <- function(x){
   return(1 / (1+exp(-x)))
 }
-p <- 0 # p must be between 0 and 1
+p <- 0.5 # p must be between 0 and 1
 # A value of 0 represents a totally segregated model (visual inputs processed totally separately from auditory inptus) 
 # A value of 1 represents a totally integrated model (visual inputs and auditory inputs are integrated and processed together)
 
@@ -156,6 +156,18 @@ else.function <- function(){
 
 
 stability.accross.groups <- funtion(){
+  storing.outputs <- matrix(NA, nrow = 1000, ncol= 20)
+  for(a in 1:10){
+    inputA <- groups[[a]]  
+    for(b in 1:10){
+      inputB <- groups[[b]]
+      for(i in 1:10){
+        one.output <- forward.pass(c(inputA[i,], inputB[i,])) 
+        storing.outputs <- rbind(storing.outputs, one.output)
+      }
+    }
+  }
+  storing.outputs <- storing.outputs[-(1:1000),]
   
 }
 
@@ -213,5 +225,9 @@ stability.within.groups <- function(){
 
 stability.within.groups()
 
+
 #The formula for entropy is -sum(v*log2(v)), where v is the vector
 
+## representations of system 1 are no more stable than of system 2. Why is that?
+## entropy measurement is off, should be between 0 and 1, getting -400 ish values. Likely due to 0s 
+## how to do other stability measurement?
