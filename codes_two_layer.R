@@ -2,16 +2,16 @@
 
 n.inputs <- 100
 n.outputs <- 20
-correlation.of.inputs <- 1 #must be between 0 and 1 
+correlation.of.inputs <- 0 #must be between 0 and 1 
 learning.rate <- 0.02
 trace.param <- 0.2
-n.training <- 5000
+n.training <- 2000
 n.input.possibilities <- 100
 trace <- rep(0, times = n.outputs) 
 sigmoid.activation <- function(x){
   return(1 / (1+exp(-x)))
 }
-p <- 0.5  # p must be between 0 and 1
+p <- 0 # p must be between 0 and 1
 # A value of 0 represents a totally segregated model (visual inputs processed totally separately from auditory inptus) 
 # A value of 1 represents a totally integrated model (visual inputs and auditory inputs are integrated and processed together)
 
@@ -80,7 +80,7 @@ batch <- function(n.training){
   #stability.accross.vector <- numeric(0)
   #stability.within.vector <- numeric(0)
   #while(counter <= n.training){ 
-  #  if(counter %% 100 == 0){
+  #  if(counter %% 500 == 0){
   #    stability.across.vector <- c(stability.across.vector, stability.across.groups()) 
   #    stability.within.vector <- c(stability.within.vector, stability.within.groups())
   #  }
@@ -143,10 +143,10 @@ input.correlation <- function(){
 }
 
 else.function <- function(){
-  input1.drawn.from <- sample(groups,1,replace=T)
-  input1.drawn.from <- do.call(rbind, input1.drawn.from)
-  input2.drawn.from <- sample(groups,1,replace=T)
-  input2.drawn.from <- do.call(rbind, input2.drawn.from)
+  input1.drawn.from <<- sample(groups,1,replace=T)
+  input1.drawn.from <<- do.call(rbind, input1.drawn.from)
+  input2.drawn.from <<- sample(groups,1,replace=T)
+  input2.drawn.from <<- do.call(rbind, input2.drawn.from)
 }
 
 
@@ -162,7 +162,6 @@ stability.accross.groups <- funtion(){
 
 
 stability.within.groups <- function(){
-  stability <- matrix(NA, nrow = 10, ncol = 20)
   storing.outputs <- matrix(NA, nrow = 1000, ncol= 20)
   for(a in 1:10){
     inputA <- groups[[a]]  
@@ -176,19 +175,43 @@ stability.within.groups <- function(){
   }
   storing.outputs <- storing.outputs[-(1:1000),]
   
-  for(h in 1:10){
-    one.stability <- colSums(storing.outputs[((i-1)*100)+1 : i*10,] == 1)
-    stability <- rbind(stability, one.stability)
+  stability1 <- colSums(storing.outputs[1:100,])
+  stability2 <- colSums(storing.outputs[101:200,])
+  stability3 <- colSums(storing.outputs[201:300,])
+  stability4 <- colSums(storing.outputs[301:400,])
+  stability5 <- colSums(storing.outputs[401:500,])
+  stability6 <- colSums(storing.outputs[501:600,])
+  stability7 <- colSums(storing.outputs[601:700,])
+  stability8 <- colSums(storing.outputs[701:800,])
+  stability9 <- colSums(storing.outputs[801:900,])
+  stability10 <- colSums(storing.outputs[901:1000,])
+  stability <- rbind(stability1, stability2, stability3, stability4, stability5, 
+                     stability6, stability7, stability8, stability9, stability10)
+  for(w in 1:10){
+    for(v in 1:20){
+      if(stability[w,v] == 0){
+        stability[w,v] <- 0.00000000000000000000000000000000000000000000001
+      }
+    }
   }
-  stability <- stability[-(1:10),]
+
+  entropy1 <- c((-sum(stability[1,1:10]*log2(stability[1,1:10]))), (-sum(stability[1,11:20]*log2(stability[1,11:20]))))
+  entropy2 <- c((-sum(stability[2,1:10]*log2(stability[2,1:10]))), (-sum(stability[2,11:20]*log2(stability[2,11:20]))))
+  entropy3 <- c((-sum(stability[3,1:10]*log2(stability[3,1:10]))), (-sum(stability[3,11:20]*log2(stability[3,11:20]))))
+  entropy4 <- c((-sum(stability[4,1:10]*log2(stability[4,1:10]))), (-sum(stability[4,11:20]*log2(stability[4,11:20]))))
+  entropy5 <- c((-sum(stability[5,1:10]*log2(stability[5,1:10]))), (-sum(stability[5,11:20]*log2(stability[5,11:20]))))
+  entropy6 <- c((-sum(stability[6,1:10]*log2(stability[6,1:10]))), (-sum(stability[6,11:20]*log2(stability[6,11:20]))))
+  entropy7 <- c((-sum(stability[7,1:10]*log2(stability[7,1:10]))), (-sum(stability[7,11:20]*log2(stability[7,11:20]))))
+  entropy8 <- c((-sum(stability[8,1:10]*log2(stability[8,1:10]))), (-sum(stability[8,11:20]*log2(stability[8,11:20]))))
+  entropy9 <- c((-sum(stability[9,1:10]*log2(stability[9,1:10]))), (-sum(stability[9,11:20]*log2(stability[9,11:20]))))
+  entropy10 <- c((-sum(stability[10,1:10]*log2(stability[10,1:10]))), (-sum(stability[10,11:20]*log2(stability[10,11:20]))))
+  entropy <- rbind(entropy1, entropy2, entropy3, entropy4, entropy5, 
+                   entropy6, entropy7, entropy8, entropy9, entropy10)
+  return(entropy)
   
 }
 
-stability.within.groups() #not quite working
+stability.within.groups()
 
 #The formula for entropy is -sum(v*log2(v)), where v is the vector
-
-
-
-
 
