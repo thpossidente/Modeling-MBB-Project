@@ -3,13 +3,13 @@ n.outputs <- 20
 correlation.of.inputs <- 0 #must be between 0 and 1 
 learning.rate <- 0.01
 trace.param <- 0.2 #higher -> learning less spread out over time. Lower -> learning more spread out over time
-n.training <- 10000
+n.training <- 5000
 n.input.possibilities <- 100
 trace <- rep(0, times = n.outputs) 
 sigmoid.activation <- function(x){
   return(1 / (1+exp(-x)))
 }
-p <- 0 # p must be between 0 and 1
+p <- 1 # p must be between 0 and 1
 # A value of 0 represents a totally segregated model (visual inputs processed totally separately from auditory inptus) 
 # A value of 1 represents a totally integrated model (visual inputs and auditory inputs are integrated and processed together)
 
@@ -22,7 +22,7 @@ integration <- function(p){
   for(input in 1:(n.inputs/2)){
     for(output in (n.outputs/2 + 1):n.outputs){
       if(runif(1) > p){
-        weights[input,output] <- -100
+        weights[input,output] <- NA
       }
     }
   }
@@ -30,7 +30,7 @@ integration <- function(p){
   for(input in (n.inputs/2 + 1):n.inputs){
     for(output in 1:(n.outputs/2)){
       if(runif(1) > p){
-        weights[input,output] <- -100
+        weights[input,output] <- NA
       }
     }
   }
@@ -82,30 +82,19 @@ trace.update <- function(input){
 
 
 batch <- function(n.training){ 
-  #counter <- 0
-  #stability.accross.vector <- numeric(0)
-  #stability.within.vector <- numeric(0)
-  #while(counter <= n.training){ 
-  #  if(counter %% 500 == 0){
-  #    stability.within.vector <- c(stability.within.vector, stability.within.groups())
-  #  }
-  #  counter <- counter + 1
+
   pb <- txtProgressBar(min=1, max=n.training, style=3)
   for(i in 1:n.training){
     g <- input.correlation() 
     for(o in 1:nrow(g)){   
-      result <- traceUpdate(g[o,], trace, weights, trace.param, learning.rate)
-      unlockBinding("weights", .GlobalEnv)
-      weights <<- result$weights
-      trace <<- result$trace
+      trace.update(g[o,])
     }
     setTxtProgressBar(pb, i)
   }
 }
-#}
 
 
-unlockBinding("weights", .GlobalEnv)
+
 
 
 
@@ -312,5 +301,4 @@ mean(entropies)
 # for noise- in each input vector change a zero to a one and a one to a zero
 # write noise function to pass input into each time and change the numbers around a little
 #graphs of entropy with batches, integration, and correlation
-
 
