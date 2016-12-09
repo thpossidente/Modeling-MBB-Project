@@ -1,4 +1,5 @@
 # Modeling-MBB-Project
 
-# codes.R is model 
-# RunCodes.R is training and evaluation of model
+# two.layer.model is model
+
+# cppcode is cpp code to make model run faster
